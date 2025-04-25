@@ -3426,6 +3426,7 @@ static void binder_transaction(struct binder_proc *proc,
 		 */
 		copy_size = object_offset - user_offset;
 		if (copy_size && (user_offset > object_offset ||
+				object_offset > tr->data_size ||
 				binder_alloc_copy_user_to_buffer(
 					&target_proc->alloc,
 					t->buffer, user_offset,
@@ -5175,6 +5176,7 @@ static int binder_ioctl_write_read(struct file *filp,
 		binder_inner_proc_lock(proc);
 		if (!binder_worklist_empty_ilocked(&proc->todo))
 			binder_wakeup_proc_ilocked(proc);
+		trace_android_vh_binder_read_done(proc, thread);
 		binder_inner_proc_unlock(proc);
 		trace_android_vh_binder_read_done(proc, thread);
 		if (ret < 0) {
